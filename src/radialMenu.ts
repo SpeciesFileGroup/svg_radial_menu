@@ -1,7 +1,13 @@
-import { Slice, RadialMenuOptions } from './types'
+import { 
+  CircleButton,
+  Slice,
+  RadialMenuOptions 
+} from './types'
+import { SVG } from './utils/svg'
 
-export class RadialMenu {
+export class RadialMenu extends SVG {
   centerSize: number
+  centerButton: CircleButton
   SVGElement: SVGElement
   parentElement: HTMLElement
   options: Object
@@ -10,13 +16,24 @@ export class RadialMenu {
   height: number
   sliceSize: number
   slices: Array<Slice>
+  fontSize: string = '14px'
+  textColor: string = '#FFFFFF'
+  backgroundColor: string = '#FFFFFF'
+  backgroundHover: string = '#CACACA'
+  backgroundSelected: string = '#A0A0A0'
+  sliceMargin: number = 1
 
   constructor (element: HTMLElement, opt: RadialMenuOptions) {
-    const { centerSize, width, height, slices, sliceSize } = opt
+    super(opt)
+    const { backgroundColor, centerSize, width, height, slices, sliceSize, centerButton } = opt
 
-    this.SVGElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    this.SVGElement.setAttribute('width', `${width}px`)
-    this.SVGElement.setAttribute('height', `${height}px`)
+    this.SVGElement = this.createSVGElement('svg', {
+      width: `${width}px`,
+      height: `${height}px`
+    })
+
+    this.backgroundColor = backgroundColor || this.backgroundColor
+
     this.parentElement = element
     this.options = opt
     this.width = width
@@ -24,6 +41,7 @@ export class RadialMenu {
     this.slices = slices
     this.sliceSize = sliceSize
     this.centerSize = centerSize
+    this.centerButton = centerButton ? centerButton : {}
 
     this.generateMenu()
   }
@@ -33,20 +51,20 @@ export class RadialMenu {
     this.SVGSlices.forEach(element => {
       (<any>this.SVGElement).appendChild(element)
     })
-    this.parentElement.appendChild(this.SVGElement)
+    this.parentElement.replaceWith(this.SVGElement)
   }
 
   private generateSlices (): Array<SVGElement> {
     const radiusSlice: number = 360 / this.slices.length
     const sliceElements: Array<SVGElement> = []
-    const widthSize: number = this.width / 2
-    const heightSize: number = this.height / 2
+    const centerX: number = this.width / 2
+    const centerY: number = this.height / 2
 
     let radiusStart = 0
     let radiusEnd = radiusSlice
 
     this.slices.forEach((slice: Slice): void => {
-      sliceElements.push(this.createSlice(slice, widthSize, heightSize, this.centerSize, this.sliceSize, radiusStart, radiusEnd))
+      sliceElements.push(this.createSlice(slice, centerX, centerY, this.centerSize, this.sliceSize, radiusStart, radiusEnd))
 
       radiusEnd = radiusEnd + radiusSlice
       radiusStart = radiusStart + radiusSlice
@@ -57,69 +75,43 @@ export class RadialMenu {
 
   private createSlice (slice: Slice, x: number, y: number, startFrom: number, size: number, radiusStart: number, radiusEnd: number): SVGElement {
     const elements: Array<SVGElement> = []
-    const sliceElement = this.createPath(this.describeArc(x, y, startFrom, size, radiusStart, radiusEnd))
-    const textElement = this.generateLabel(slice, x, y, (size / 2) + startFrom, radiusStart + (radiusEnd - radiusStart) / 2)
+    const distance = (size / 2) + startFrom
+    const coordinates = this.polarToCartesian(x, y, distance , radiusStart + (radiusEnd - radiusStart) / 2)
+    const sliceElement = this.centerButton.radius ? 
+      this.createSVGElement('path', { 
+        d: this.describeArc(x, y, startFrom, size, radiusStart, radiusEnd),
+        fill: slice.backgroundColor || this.backgroundColor
+      })
+      : this.createSVGCircle(x, x, this.centerSize - (this.sliceMargin * 2))
+    
     let svgGroup: SVGElement
 
     elements.push(sliceElement)
-    elements.push(textElement)
+    
+    if (slice.label) {
+      elements.push(this.createSVGText(coordinates.x, coordinates.y, slice.label, {
+        x: coordinates.x,
+        dy: this.fontSize,
+        fill: this.textColor,
+        'text-anchor': 'middle'
+      }))
+    }
+    if (slice.icon) {
+      const { width, height, url } = slice.icon
+      const imageElement = this.createSVGImage(coordinates.x - width / 2, coordinates.y - height, width, height, url)
+      elements.push(imageElement)
+    }
 
     svgGroup = this.createSVGGroup(elements)
 
     return slice.link ? this.createSVGLink(svgGroup, slice.link) : svgGroup
   }
 
-  private generateLabel (slice: Slice, x: number, y: number, distance: number, radius: number) {
-    const coordinates = this.polarToCartesian(x, y, distance , radius)
-    const SVGText = this.createSVGText(coordinates.x, coordinates.y, slice.label)
-
-    return SVGText
-  }
-
-  private createPath (arcPath: string): SVGElement {
-    const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    pathElement.setAttribute('d', arcPath)
-    pathElement.setAttribute('fill', 'gray')
-    // pathElement.setAttribute('stroke', 'white')
-    // pathElement.setAttribute('stroke-opacity', '1')
-    // pathElement.setAttribute('stroke-width', '3')
-    // pathElement.setAttribute('style', '3')
-    
-
-    return pathElement
-  }
-
-  private createSVGLink (nodeChild: SVGElement, link: string): SVGElement {
-    const element = document.createElementNS('http://www.w3.org/2000/svg', 'a')
-    element.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', link)
-    element.append(nodeChild)
-
-    return element
-  }
-
-  private createSVGText (x: number, y: number, text: string): SVGElement {
-    const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-    textElement.textContent = text
-    textElement.setAttribute('x', `${x}px`)
-    textElement.setAttribute('y', `${y}px`)
-    textElement.setAttribute('fill', 'white')
-    return textElement
-  }
-
-  private createSVGGroup (elements: Array<SVGElement>): SVGElement {
-    const SVGElement =  document.createElementNS('http://www.w3.org/2000/svg', 'g')
-
-    elements.forEach((element: SVGElement) => {
-      SVGElement.appendChild(element)
-    })
-
-    return SVGElement
-  }
 
   private describeArc (x: number, y: number, radius: number, spread: number, startAngle: number, endAngle: number): string {
-    const innerStart = this.polarToCartesian(x, y, radius, endAngle)
-    const innerEnd = this.polarToCartesian(x, y, radius, startAngle)
-    const outerStart = this.polarToCartesian(x, y, radius + spread, endAngle)
+    const innerStart = this.polarToCartesian(x, y, radius, endAngle - this.sliceMargin)
+    const innerEnd = this.polarToCartesian(x, y, radius, startAngle + this.sliceMargin)
+    const outerStart = this.polarToCartesian(x, y, radius + spread, endAngle - this.sliceMargin / 2)
     const outerEnd = this.polarToCartesian(x, y, radius + spread, startAngle)
   
     const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
