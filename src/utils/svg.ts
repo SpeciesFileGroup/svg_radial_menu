@@ -57,9 +57,14 @@ export class SVG {
 
   public createSVGText (x: number, y: number, text: string, attr: SVGAttribute = {}): SVGElement {
     const stringLines: Array<string> = text.split(' ')
-    const tspanLines = stringLines.map((line: string): SVGElement => {
+    const lineSize = parseInt(`${attr['font-size']}`, 10)
+    const middlePosition = stringLines.length === 1 ? 0 : (lineSize * stringLines.length) / 2 * -1
+    const tspanLines = stringLines.map((line: string, index: number): SVGElement => {
       const tspan = this.createSVGElement('tspan', attr)
-      tspan.setAttribute('x', `${x}px`)
+      const dy = index ? lineSize : middlePosition
+      // tspan.setAttribute('dy', `${dy}px`)
+
+      tspan.removeAttribute('y')
       tspan.textContent = line
 
       return tspan

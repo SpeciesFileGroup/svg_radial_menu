@@ -8,7 +8,6 @@ import { SVG } from './utils/svg'
 export class RadialMenu extends SVG {
   centerSize: number
   centerButton: CircleButton
-  SVGElement: SVGElement
   parentElement: HTMLElement
   options: Object
   SVGSlices: Array<SVGElement> = []
@@ -16,16 +15,17 @@ export class RadialMenu extends SVG {
   height: number
   sliceSize: number
   slices: Array<Slice>
-  fontSize: string = '14px'
+  fontSize: string | number = '14px'
+  fontFamily: string = 'Arial'
   textColor: string = '#FFFFFF'
   backgroundColor: string = '#FFFFFF'
   backgroundHover: string = '#CACACA'
   backgroundSelected: string = '#A0A0A0'
-  sliceMargin: number = 1
+  sliceMargin: number = 4
 
   constructor (element: HTMLElement, opt: RadialMenuOptions) {
     super(opt)
-    const { backgroundColor, centerSize, width, height, slices, sliceSize, centerButton } = opt
+    const { backgroundColor, centerSize, width, height, slices, sliceSize, centerButton, textColor, fontFamily, fontSize } = opt
 
     this.SVGElement = this.createSVGElement('svg', {
       width: `${width}px`,
@@ -42,6 +42,9 @@ export class RadialMenu extends SVG {
     this.sliceSize = sliceSize
     this.centerSize = centerSize
     this.centerButton = centerButton ? centerButton : {}
+    this.textColor = textColor || this.textColor
+    this.fontSize = fontSize || this.fontSize
+    this.fontFamily = fontFamily || this.fontFamily
 
     this.generateMenu()
   }
@@ -64,7 +67,16 @@ export class RadialMenu extends SVG {
     let radiusEnd = radiusSlice
 
     this.slices.forEach((slice: Slice): void => {
-      sliceElements.push(this.createSlice(slice, centerX, centerY, this.centerSize, this.sliceSize, radiusStart, radiusEnd))
+      let size = slice.size || this.sliceSize
+      let segment:Slice | undefined = slice
+      let startFrom = this.centerSize + this.sliceMargin
+
+      do {
+        sliceElements.push(this.createSlice(segment, centerX, centerY, startFrom, size, radiusStart, radiusEnd))
+        segment = segment.slice
+        startFrom = startFrom + size + this.sliceMargin
+        size = segment?.size || this.sliceSize
+      } while(segment)
 
       radiusEnd = radiusEnd + radiusSlice
       radiusStart = radiusStart + radiusSlice
@@ -76,13 +88,14 @@ export class RadialMenu extends SVG {
   private createSlice (slice: Slice, x: number, y: number, startFrom: number, size: number, radiusStart: number, radiusEnd: number): SVGElement {
     const elements: Array<SVGElement> = []
     const distance = (size / 2) + startFrom
-    const coordinates = this.polarToCartesian(x, y, distance , radiusStart + (radiusEnd - radiusStart) / 2)
-    const sliceElement = this.centerButton.radius ? 
-      this.createSVGElement('path', { 
-        d: this.describeArc(x, y, startFrom, size, radiusStart, radiusEnd),
+
+    const distanceCoordinates = this.polarToCartesian(x, y, this.sliceMargin , radiusStart + (radiusEnd - radiusStart) / 2)
+    const coordinates = this.polarToCartesian(distanceCoordinates.x, distanceCoordinates.y, distance, radiusStart + (radiusEnd - radiusStart) / 2)
+    const sliceElement = this.createSVGElement('path', { 
+        d: this.describeArc(distanceCoordinates.x, distanceCoordinates.y, startFrom, size, radiusStart, radiusEnd),
         fill: slice.backgroundColor || this.backgroundColor
       })
-      : this.createSVGCircle(x, x, this.centerSize - (this.sliceMargin * 2))
+      // : this.createSVGCircle(x, y, this.centerSize - (this.sliceMargin * 2))
     
     let svgGroup: SVGElement
 
@@ -91,9 +104,13 @@ export class RadialMenu extends SVG {
     if (slice.label) {
       elements.push(this.createSVGText(coordinates.x, coordinates.y, slice.label, {
         x: coordinates.x,
-        dy: this.fontSize,
-        fill: this.textColor,
-        'text-anchor': 'middle'
+        y: coordinates.y,
+        fill: slice.textColor || this.textColor,
+        'text-anchor': 'middle',
+        'font-size': this.fontSize,
+        'font-family': this.fontFamily,
+        'alignment-baseline': 'center',
+        'dominant-baseline': 'middle'
       }))
     }
     if (slice.icon) {
@@ -109,14 +126,14 @@ export class RadialMenu extends SVG {
 
 
   private describeArc (x: number, y: number, radius: number, spread: number, startAngle: number, endAngle: number): string {
-    const innerStart = this.polarToCartesian(x, y, radius, endAngle - this.sliceMargin)
-    const innerEnd = this.polarToCartesian(x, y, radius, startAngle + this.sliceMargin)
-    const outerStart = this.polarToCartesian(x, y, radius + spread, endAngle - this.sliceMargin / 2)
+    const innerStart = this.polarToCartesian(x, y, radius, endAngle)
+    const innerEnd = this.polarToCartesian(x, y, radius, startAngle)
+    const outerStart = this.polarToCartesian(x, y, radius + spread, endAngle)
     const outerEnd = this.polarToCartesian(x, y, radius + spread, startAngle)
   
     const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
   
-    var d = [
+    const d = [
         'M', outerStart.x, outerStart.y,
         'A', radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y,
         'L', innerEnd.x, innerEnd.y, 

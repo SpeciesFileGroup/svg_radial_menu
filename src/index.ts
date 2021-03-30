@@ -3,14 +3,17 @@ import { RadialMenu } from './radialMenu'
 import testIcon from './assets/icon'
 
 const options = {
-  width: 600,
-  height: 600,
-  sliceSize: 200,
-  centerSize: 50,
-  backgroundColor: '#000000',
+  width: 400,
+  height: 400,
+  sliceSize: 130,
+  centerSize: 30,
+  fontSize: 11,
+  fontFamily: 'Arial',
+  backgroundColor: '#FFFFFF',
+  textColor: '#000000',
   centerButton: {
     color: 'red',
-    radius: 30,
+    radius: 20,
     icon: {
       width: 30,
       height: 30,
@@ -20,19 +23,14 @@ const options = {
   slices: [
     {
       label: 'Data attributes',
-      event: 'alert'
-    },
-    {
-      label: 'Empty',
-      event: 'alert'
-    },
-    {
-      label: 'Empty',
-      event: 'alert'
-    },
-    {
-      label: 'SFG Homepage',
-      link: 'http://speciesfilegroup.org',
+      event: 'alert',
+      slice: {
+        label: '6',
+        event: 'alert',
+        size: 26,
+        textColor: '#FFFFFF',
+        backgroundColor: '#006ebf',
+      },
       icon: {
         width: 20,
         height: 20,
@@ -40,17 +38,36 @@ const options = {
       }
     },
     {
-      label: 'Bla bla'
+      label: '0',
+      event: 'alert'
     },
     {
-      label: 'Bla bla'
+      label: '0',
+      event: 'alert'
     },
     {
-      label: 'TaxonWorks',
+      label: '0',
+      link: 'http://speciesfilegroup.org',
+      slice: {
+        label: '6',
+        event: 'alert',
+        size: 24,
+        textColor: '#FFFFFF',
+        backgroundColor: '#006ebf',
+      },
+    },
+    {
+      label: '0'
+    },
+    {
+      label: '0'
+    },
+    {
+      label: '0',
       link: 'http://taxonworks.org'
     },
     {
-      label: 'Bla bla'
+      label: '0'
     }
   ]
 }
