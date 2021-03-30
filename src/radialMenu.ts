@@ -111,11 +111,17 @@ export class RadialMenu extends SVG {
         'font-family': this.fontFamily,
         'alignment-baseline': 'center',
         'dominant-baseline': 'middle'
+      }, {
+        verticalAlign: !slice?.icon
       }))
     }
     if (slice.icon) {
       const { width, height, url } = slice.icon
-      const imageElement = this.createSVGImage(coordinates.x - width / 2, coordinates.y - height, width, height, url)
+      const iconCoordinates = {
+        x: coordinates.x - width / 2,
+        y: slice.label ? coordinates.y - height - 11 : coordinates.y - height / 2
+      }
+      const imageElement = this.createSVGImage(iconCoordinates.x, iconCoordinates.y, width, height, url)
       elements.push(imageElement)
     }
 
