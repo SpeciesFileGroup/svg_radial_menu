@@ -9,11 +9,16 @@
   "scripts": {
     "clean": "rm dist/bundle.js",
     "start": "snowpack dev",
-    "build": "snowpack build"
+    "build": "snowpack build",
+    "build:library": "rollup -c rollup.config.js"
   },
   "dependencies": {},
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.1",
+    "eslint": "^7.23.0",
+    "rollup": "^2.44.0",
     "snowpack": "^3.1.2",
-    "eslint": "^7.23.0"
+    "tslib": "^2.1.0",
+    "typescript": "^4.2.3"
   }
 }
