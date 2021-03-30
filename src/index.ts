@@ -3,8 +3,8 @@ import { RadialMenu } from './radialMenu'
 import testIcon from './assets/icon'
 
 const options = {
-  width: 400,
-  height: 400,
+  width: 1000,
+  height: 600,
   sliceSize: 130,
   centerSize: 30,
   fontSize: 11,
@@ -23,14 +23,14 @@ const options = {
   slices: [
     {
       label: 'Data attributes',
-      event: 'alert',
-      slice: {
+      name: 'attributes',
+      slice: [{
         label: '6',
         event: 'alert',
         size: 26,
         textColor: '#FFFFFF',
         backgroundColor: '#006ebf',
-      },
+      }],
       icon: {
         width: 20,
         height: 20,
@@ -39,25 +39,59 @@ const options = {
     },
     {
       label: '0',
-      event: 'alert'
+      event: 'alert',
+      slice: [{
+        label: 'Bigger',
+        event: 'alert',
+        textColor: '#FFFFFF',
+        backgroundColor: 'red'
+      }]
     },
     {
       label: '0',
       event: 'alert'
     },
     {
-      label: '0',
+      label: 'SFG Homepage',
       link: 'http://speciesfilegroup.org',
-      slice: {
-        label: '6',
+      slice: [{
+        label: 'It?',
         event: 'alert',
         size: 24,
         textColor: '#FFFFFF',
         backgroundColor: '#006ebf',
       },
+      {
+        label: 'Like',
+        event: 'alert',
+        size: 24,
+        textColor: '#FFFFFF',
+        backgroundColor: '#006ebf',
+      },
+      {
+        label: 'You',
+        event: 'alert',
+        size: 24,
+        textColor: '#FFFFFF',
+        backgroundColor: '#006ebf',
+      },
+      {
+        label: 'Do 1',
+        event: 'alert',
+        size: 24,
+        textColor: '#FFFFFF',
+        backgroundColor: '#006ebf',
+      }],
     },
     {
-      label: '0'
+      label: '0',
+      slice: [{
+        label: 'Red',
+        event: 'alert',
+        size: 50,
+        textColor: '#FFFFFF',
+        backgroundColor: 'red'
+      }]
     },
     {
       label: '0'
@@ -73,4 +107,9 @@ const options = {
 }
 
 const element = document.querySelector('#app') as HTMLElement
-const radial = new RadialMenu(element, options)
+let radial = new RadialMenu(element, options)
+
+
+radial.on('click', (data) => {
+  console.log(data)
+})

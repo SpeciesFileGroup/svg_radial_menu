@@ -1,13 +1,13 @@
 export type Slice = {
   backgroundColor?: string,
   textColor?: string
-  event?: string,
+  name?: string,
   link?: string
   radius?: number | unknown
   label?: string
   size?: number,
   icon?: SliceIcon
-  slice?: Slice
+  slice?: Array<Slice>
 }
 
 export type RadialMenuOptions = {
@@ -33,7 +33,7 @@ export type CircleButton = {
   icon?: SliceIcon
 }
 
-type SliceIcon = {
+export type SliceIcon = {
   width: number,
   height: number
   url: string

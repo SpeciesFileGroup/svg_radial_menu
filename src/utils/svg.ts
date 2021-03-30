@@ -55,16 +55,15 @@ export class SVG {
     return element
   }
 
-  public createSVGText (x: number, y: number, text: string, attr: SVGAttribute = {}, opt: object = {}): SVGElement {
-    const { verticalAlign } = opt
+  public createSVGText (x: number, y: number, text: string, attr: SVGAttribute = {}, { verticalAlign }: { verticalAlign: boolean }): SVGElement {
     const stringLines: Array<string> = text.split(' ')
     const lineSize = parseInt(`${attr['font-size']}`, 10)
-    const middlePosition = stringLines.length === 1 || !verticalAlign ? 0 : (lineSize * stringLines.length) / 2 * -1
+    const middlePosition: number = stringLines.length === 1 || !verticalAlign ? 0 : (((lineSize / 2) * -stringLines.length)) + (lineSize / 2)
     const tspanLines = stringLines.map((line: string, index: number): SVGElement => {
       const tspan = this.createSVGElement('tspan', attr)
       const dy = index ? lineSize : middlePosition
+      
       tspan.setAttribute('dy', `${dy}px`)
-
       tspan.removeAttribute('y')
       tspan.textContent = line
 
@@ -84,5 +83,33 @@ export class SVG {
     })
 
     return SVGElement
+  }
+
+  public describeArc (x: number, y: number, radius: number, spread: number, startAngle: number, endAngle: number): string {
+    const innerStart = this.polarToCartesian(x, y, radius, endAngle)
+    const innerEnd = this.polarToCartesian(x, y, radius, startAngle)
+    const outerStart = this.polarToCartesian(x, y, radius + spread, endAngle)
+    const outerEnd = this.polarToCartesian(x, y, radius + spread, startAngle)
+  
+    const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
+  
+    const d = [
+        'M', outerStart.x, outerStart.y,
+        'A', radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y,
+        'L', innerEnd.x, innerEnd.y, 
+        'A', radius, radius, 0, largeArcFlag, 1, innerStart.x, innerStart.y, 
+        'L', outerStart.x, outerStart.y, 'Z'
+    ].join(' ')
+  
+    return d
+  }
+
+  public polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
+    const angleInRadians = (angleInDegrees-90) * Math.PI / 180.0
+    
+    return {
+      x: centerX + (radius * Math.cos(angleInRadians)),
+      y: centerY + (radius * Math.sin(angleInRadians))
+    }
   }
 }

@@ -1,38 +1,36 @@
+import { SVG } from './utils/svg'
+import { Segment } from './slice'
+import { EventEmitter } from './utils/eventEmitter'
 import { 
   CircleButton,
   Slice,
   RadialMenuOptions 
 } from './types'
-import { SVG } from './utils/svg'
 
-export class RadialMenu extends SVG {
+export class RadialMenu extends EventEmitter {
   centerSize: number
   centerButton: CircleButton
   parentElement: HTMLElement
-  options: Object
-  SVGSlices: Array<SVGElement> = []
+  options: RadialMenuOptions
+  SVGSlices: Array<Segment> = []
   width: number
   height: number
   sliceSize: number
   slices: Array<Slice>
-  fontSize: string | number = '14px'
-  fontFamily: string = 'Arial'
-  textColor: string = '#FFFFFF'
-  backgroundColor: string = '#FFFFFF'
-  backgroundHover: string = '#CACACA'
-  backgroundSelected: string = '#A0A0A0'
   sliceMargin: number = 4
+  SVGObject: SVG
+  SVGElement: SVGElement
 
   constructor (element: HTMLElement, opt: RadialMenuOptions) {
-    super(opt)
-    const { backgroundColor, centerSize, width, height, slices, sliceSize, centerButton, textColor, fontFamily, fontSize } = opt
+    super()
+    const { centerSize, width, height, slices, sliceSize, centerButton } = opt
 
-    this.SVGElement = this.createSVGElement('svg', {
+    this.SVGObject = new SVG({
       width: `${width}px`,
       height: `${height}px`
     })
 
-    this.backgroundColor = backgroundColor || this.backgroundColor
+    this.SVGElement = this.SVGObject.SVGElement
 
     this.parentElement = element
     this.options = opt
@@ -42,121 +40,68 @@ export class RadialMenu extends SVG {
     this.sliceSize = sliceSize
     this.centerSize = centerSize
     this.centerButton = centerButton ? centerButton : {}
-    this.textColor = textColor || this.textColor
-    this.fontSize = fontSize || this.fontSize
-    this.fontFamily = fontFamily || this.fontFamily
 
     this.generateMenu()
   }
 
-  generateMenu (): void {
-    this.SVGSlices = this.generateSlices()
-    this.SVGSlices.forEach(element => {
-      (<any>this.SVGElement).appendChild(element)
+  private generateMenu (): void {
+    this.drawLevel(this.slices)
+    this.SVGSlices.forEach(svgObject => {
+      this.addEvents(svgObject)
+      this.SVGElement.appendChild(svgObject.toSVG())
     })
-    this.parentElement.replaceWith(this.SVGElement)
+    this.parentElement.innerHTML = ''
+    this.parentElement.appendChild(this.SVGElement)
   }
 
-  private generateSlices (): Array<SVGElement> {
-    const radiusSlice: number = 360 / this.slices.length
-    const sliceElements: Array<SVGElement> = []
+  private drawLevel (slices: Array<Slice>, startDistance: number = this.centerSize, radiusStart: number = 0, endAngle: number = 360): void {
+    const radiusSlice: number = (endAngle - radiusStart) / slices.length
+    const sliceElements: Array<Segment> = []
     const centerX: number = this.width / 2
     const centerY: number = this.height / 2
 
-    let radiusStart = 0
     let radiusEnd = radiusSlice
 
-    this.slices.forEach((slice: Slice): void => {
-      let size = slice.size || this.sliceSize
+    slices.forEach((slice: Slice): void => {
       let segment:Slice | undefined = slice
-      let startFrom = this.centerSize + this.sliceMargin
+      let startFrom = startDistance + this.sliceMargin
+      const children = segment.slice
 
-      do {
-        sliceElements.push(this.createSlice(segment, centerX, centerY, startFrom, size, radiusStart, radiusEnd))
-        segment = segment.slice
-        startFrom = startFrom + size + this.sliceMargin
-        size = segment?.size || this.sliceSize
-      } while(segment)
+      sliceElements.push(new Segment(segment, centerX, centerY, startFrom, radiusStart, radiusSlice, this.options))
+      startFrom = startFrom + (segment?.size || this.sliceSize)
+
+      if(children) {
+        this.drawLevel(children, startFrom, radiusStart, radiusEnd)
+      }
 
       radiusEnd = radiusEnd + radiusSlice
       radiusStart = radiusStart + radiusSlice
     })
 
-    return sliceElements
+    this.SVGSlices = this.SVGSlices.concat([], sliceElements)
   }
 
-  private createSlice (slice: Slice, x: number, y: number, startFrom: number, size: number, radiusStart: number, radiusEnd: number): SVGElement {
-    const elements: Array<SVGElement> = []
-    const distance = (size / 2) + startFrom
-
-    const distanceCoordinates = this.polarToCartesian(x, y, this.sliceMargin , radiusStart + (radiusEnd - radiusStart) / 2)
-    const coordinates = this.polarToCartesian(distanceCoordinates.x, distanceCoordinates.y, distance, radiusStart + (radiusEnd - radiusStart) / 2)
-    const sliceElement = this.createSVGElement('path', { 
-        d: this.describeArc(distanceCoordinates.x, distanceCoordinates.y, startFrom, size, radiusStart, radiusEnd),
-        fill: slice.backgroundColor || this.backgroundColor
+  private createSegments (segment: Slice | Array<Slice>, x: number, y: number, startFrom: number, radiusStart: number, radiusEnd: number, options: object):Array<Segment> {
+    const radiusSlice = radiusStart + radiusEnd - radiusStart
+    if(Array.isArray(segment)) {
+      const radius = radiusSlice / segment.length
+      return segment.map((s, index) => {
+        return new Segment(s, x, y, startFrom, radiusStart + radius * index, radius, this.options)
       })
-      // : this.createSVGCircle(x, y, this.centerSize - (this.sliceMargin * 2))
-    
-    let svgGroup: SVGElement
-
-    elements.push(sliceElement)
-    
-    if (slice.label) {
-      elements.push(this.createSVGText(coordinates.x, coordinates.y, slice.label, {
-        x: coordinates.x,
-        y: coordinates.y,
-        fill: slice.textColor || this.textColor,
-        'text-anchor': 'middle',
-        'font-size': this.fontSize,
-        'font-family': this.fontFamily,
-        'alignment-baseline': 'center',
-        'dominant-baseline': 'middle'
-      }, {
-        verticalAlign: !slice?.icon
-      }))
+    } else {
+      return [new Segment(segment, x, y, startFrom, radiusStart, radiusSlice, this.options)]
     }
-    if (slice.icon) {
-      const { width, height, url } = slice.icon
-      const iconCoordinates = {
-        x: coordinates.x - width / 2,
-        y: slice.label ? coordinates.y - height - 11 : coordinates.y - height / 2
-      }
-      const imageElement = this.createSVGImage(iconCoordinates.x, iconCoordinates.y, width, height, url)
-      elements.push(imageElement)
-    }
-
-    svgGroup = this.createSVGGroup(elements)
-
-    return slice.link ? this.createSVGLink(svgGroup, slice.link) : svgGroup
   }
 
+  private addEvents (segmentObject: Segment): void {
+    const element = segmentObject.toSVG()
+    const { name } = segmentObject.slice
 
-  private describeArc (x: number, y: number, radius: number, spread: number, startAngle: number, endAngle: number): string {
-    const innerStart = this.polarToCartesian(x, y, radius, endAngle)
-    const innerEnd = this.polarToCartesian(x, y, radius, startAngle)
-    const outerStart = this.polarToCartesian(x, y, radius + spread, endAngle)
-    const outerEnd = this.polarToCartesian(x, y, radius + spread, startAngle)
+    element.addEventListener('click', event => { this.emit('click', { event, segmentObject, name }) })
   
-    const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1'
+    element.addEventListener('dbclick', event => { this.emit('dbclick', { event, segmentObject, name }) })
   
-    const d = [
-        'M', outerStart.x, outerStart.y,
-        'A', radius + spread, radius + spread, 0, largeArcFlag, 0, outerEnd.x, outerEnd.y,
-        'L', innerEnd.x, innerEnd.y, 
-        'A', radius, radius, 0, largeArcFlag, 1, innerStart.x, innerStart.y, 
-        'L', outerStart.x, outerStart.y, 'Z'
-    ].join(' ')
-  
-    return d
-  }
-
-  private polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
-    const angleInRadians = (angleInDegrees-90) * Math.PI / 180.0
-    
-    return {
-      x: centerX + (radius * Math.cos(angleInRadians)),
-      y: centerY + (radius * Math.sin(angleInRadians))
-    }
+    element.addEventListener('contextmenu', event => { this.emit('contextmenu', { event, segmentObject, name }) })
   }
 
 }
