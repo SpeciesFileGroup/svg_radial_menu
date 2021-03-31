@@ -9,7 +9,7 @@ import {
   SVGAttribute
 } from './types'
 
-export class RadialMenu extends EventEmitter {
+export default class RadialMenu extends EventEmitter {
   centerSize: number
   middleButton: CircleButton
   parentElement: HTMLElement

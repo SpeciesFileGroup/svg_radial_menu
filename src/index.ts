@@ -1,5 +1,5 @@
 import "./styles.css";
-import { RadialMenu } from './radialMenu'
+import RadialMenu from './radialMenu'
 import testIcon from './assets/icon'
 
 const options = {
