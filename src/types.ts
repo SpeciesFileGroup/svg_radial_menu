@@ -1,25 +1,23 @@
 export type Slice = {
-  backgroundColor?: string,
-  textColor?: string
   name?: string,
   link?: string
-  radius?: number | unknown
   label?: string
   size?: number,
   icon?: SliceIcon
+  radius?: number
+  svgAttributes?: SVGAttribute,
   slice?: Array<Slice>
 }
 
 export type RadialMenuOptions = {
-  backgroundColor?: string,
-  textColor?: string,
   height: number
   width: number
   sliceSize: number,
   centerSize: number,
-  fontFamily: string,
-  fontSize: string | number,
-  centerButton?: CircleButton,
+  margin?: number,
+  css: SVGAttribute,
+  middleButton?: CircleButton,
+  svgAttributes?: SVGAttribute,
   slices: Array<Slice>
 }
 
@@ -27,9 +25,10 @@ export type SVGAttribute = { [key: string]: string | number }
 
 export type CircleButton = {
   radius?: number,
-  backgroundColor?: string,
   link?: string,
   label?: string,
+  name?: string,
+  svgAttributes: SVGAttribute
   icon?: SliceIcon
 }
 

@@ -1,39 +1,44 @@
-import { Slice, SliceIcon, CircleButton, RadialMenuOptions } from './types'
+import { Slice, SliceIcon, RadialMenuOptions, SVGAttribute } from './types'
 import { SVG } from './utils/svg'
 
 export class Segment extends SVG {
-
-  slice: Slice
-  size: number
-  options: RadialMenuOptions
-  radiusStart: number
-  radiusEnd: number
-  startFrom: number
-  x: number
-  y: number
-  fontSize: string | number = '14px'
-  fontFamily: string = 'Arial'
-  textColor: string = '#FFFFFF'
-  backgroundColor: string = '#FFFFFF'
-  backgroundHover: string = '#CACACA'
-  backgroundSelected: string = '#A0A0A0'
-  sliceMargin: number = 4
+  private slice: Slice
+  private backgroundColor: string = '#FFFFFF'
+  private _name: string | unknown
+  private options: RadialMenuOptions
+  private radiusEnd: number
+  private radiusStart: number
+  private size: number
+  private margin: number = 0
+  private startFrom: number
+  private textColor: string = '#FFFFFF'
+  private SVGAttributes: SVGAttribute
+  private defaultSVGAttributes: SVGAttribute
+  private x: number
+  private y: number
 
   constructor (slice: Slice, x: number, y: number, startFrom: number, radiusStart: number, radiusSlice: number, opts: RadialMenuOptions) {
     super(opts)
     
-    const { sliceSize, backgroundColor, textColor } = opts
+    const { sliceSize, margin } = opts
     this.options = opts
     this.slice = slice
+    this._name = slice.name
     this.size = slice.size || sliceSize
     this.startFrom = startFrom
     this.radiusStart = radiusStart
     this.radiusEnd = radiusStart + radiusSlice
     this.x = x
     this.y = y
-    this.backgroundColor = backgroundColor || this.backgroundColor
-    this.textColor = textColor || this.textColor
+    this.margin = margin || this.margin
+    this.SVGAttributes = this.parseAttributes(slice.svgAttributes || {})
+    this.defaultSVGAttributes = this.parseAttributes(opts.svgAttributes || {})
 
+    if ((this.radiusEnd - this.radiusStart) >= 360) {
+      this.radiusEnd = 359.999
+      this.margin = 0
+    }
+  
     this.SVGElement = this.createSlice(this.x, this.y, this.startFrom, this.size, this.radiusStart, this.radiusEnd, this.options)
   }
 
@@ -46,27 +51,25 @@ export class Segment extends SVG {
     const elements: Array<SVGElement> = []
     const middleSlice = (size / 2) + startFrom
     const middleRadius = (radiusEnd - radiusStart) / 2
-    const distanceCoordinates = this.polarToCartesian(x, y, this.sliceMargin , radiusStart + middleRadius)
+    const distanceCoordinates = this.polarToCartesian(x, y, this.margin, radiusStart + middleRadius)
     const coordinates = this.polarToCartesian(distanceCoordinates.x, distanceCoordinates.y, middleSlice, radiusStart + middleRadius)
     const d = this.describeArc(distanceCoordinates.x, distanceCoordinates.y, startFrom, size, radiusStart, radiusEnd)
 
-    const sliceElement = this.createSVGElement('path', { d: d, fill: slice.backgroundColor || this.backgroundColor })
+    const sliceElement = this.createSVGElement('path', Object.assign({},
+      this.defaultSVGAttributes,
+      this.SVGAttributes,
+      { d: d }))
     
     let svgGroup: SVGElement
 
     elements.push(sliceElement)
     
     if (slice.label) {
-      elements.push(this.createSVGText(coordinates.x, coordinates.y, slice.label, {
-        x: coordinates.x,
-        y: coordinates.y,
-        fill: `${slice.textColor || opts.textColor}`,
-        'text-anchor': 'middle',
-        'font-size': opts.fontSize,
-        'font-family': opts.fontFamily,
-        'alignment-baseline': 'center',
-        'dominant-baseline': 'middle'
-      }, {
+      elements.push(this.createSVGText(coordinates.x, coordinates.y, slice.label, Object.assign({},
+        this.defaultSVGAttributes,
+        this.SVGAttributes,
+      { fill: this.SVGAttributes.color || this.defaultSVGAttributes.color }),
+      {
         verticalAlign: !slice?.icon
       }))
     }
@@ -79,9 +82,17 @@ export class Segment extends SVG {
     return slice.link ? this.createSVGLink(svgGroup, slice.link) : svgGroup
   }
 
+  public get name () {
+    return this._name
+  }
+
+  private get getAttributes () {
+    return Object.assign({}, this.defaultSVGAttributes, this.SVGAttributes)
+  }
+
   private addIcon (icon: SliceIcon, { x, y }: { x: number, y: number }): SVGElement {
     const { width, height, url } = icon
-    const fontSize = parseInt(this.options.fontSize.toString(), 10)
+    const fontSize = parseInt(this.getAttributes['font-size'].toString(), 10)
     const iconCoordinates = {
       x: x - width / 2,
       y: this.slice.label ? y - height - fontSize : y - height / 2

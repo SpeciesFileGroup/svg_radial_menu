@@ -1,6 +1,10 @@
 svg g:hover {
   opacity: 0.7;
 }
+
+text, tspan {
+  text-anchor: middle;
+}
 body {
   background-color: #000;
 }

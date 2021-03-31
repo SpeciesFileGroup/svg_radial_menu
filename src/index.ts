@@ -5,15 +5,26 @@ import testIcon from './assets/icon'
 const options = {
   width: 1000,
   height: 600,
-  sliceSize: 130,
-  centerSize: 30,
-  fontSize: 11,
-  fontFamily: 'Arial',
-  backgroundColor: '#FFFFFF',
-  textColor: '#000000',
-  centerButton: {
-    color: 'red',
-    radius: 20,
+  sliceSize: 120,
+  centerSize: 40,
+  margin: 2,
+  css: {
+    class: 'radial-menu'
+  },
+  svgAttributes: {
+    fill: '#FFFFFF',
+    color: '#000000',
+    textAnchor: 'middle',
+    fontSize: '11px',
+    fontFamily: 'Arial'
+  },
+  middleButton: {
+    backgroundColor: 'red',
+    radius: 28,
+    name: 'middle',
+    svgAttributes: {
+      fill: 'green'
+    },
     icon: {
       width: 30,
       height: 30,
@@ -24,12 +35,16 @@ const options = {
     {
       label: 'Data attributes',
       name: 'attributes',
-      slice: [{
+      radius: 50,
+      slice: [
+      {
         label: '6',
-        event: 'alert',
+        name: 'alert',
         size: 26,
-        textColor: '#FFFFFF',
-        backgroundColor: '#006ebf',
+        svgAttributes: {
+          color: '#FFFFFF',
+          fill: '#006ebf'
+        }
       }],
       icon: {
         width: 20,
@@ -38,71 +53,57 @@ const options = {
       }
     },
     {
-      label: '0',
-      event: 'alert',
-      slice: [{
-        label: 'Bigger',
-        event: 'alert',
-        textColor: '#FFFFFF',
-        backgroundColor: 'red'
-      }]
-    },
-    {
-      label: '0',
-      event: 'alert'
-    },
-    {
       label: 'SFG Homepage',
-      link: 'http://speciesfilegroup.org',
+      link: 'https://speciesfilegroup.org',
       slice: [{
         label: 'It?',
-        event: 'alert',
-        size: 24,
-        textColor: '#FFFFFF',
-        backgroundColor: '#006ebf',
+        name: 'alert',
+        size: 26,
+        svgAttributes: {
+          color: '#FFFFFF',
+          fill: '#006ebf',
+        }
       },
       {
         label: 'Like',
-        event: 'alert',
-        size: 24,
-        textColor: '#FFFFFF',
-        backgroundColor: '#006ebf',
+        name: 'alert',
+        size: 26,
+        svgAttributes: {
+          color: '#FFFFFF',
+          fill: '#006ebf',
+        }
       },
       {
         label: 'You',
-        event: 'alert',
-        size: 24,
-        textColor: '#FFFFFF',
-        backgroundColor: '#006ebf',
+        name: 'alert',
+        size: 26,
+        svgAttributes: {
+          color: '#FFFFFF',
+          fill: '#006ebf',
+        }
       },
       {
-        label: 'Do 1',
-        event: 'alert',
-        size: 24,
-        textColor: '#FFFFFF',
-        backgroundColor: '#006ebf',
+        label: 'Do',
+        name: 'alert',
+        size: 26,
+        svgAttributes: {
+          color: '#FFFFFF',
+          fill: '#006ebf',
+        }
       }],
     },
     {
-      label: '0',
-      slice: [{
-        label: 'Red',
-        event: 'alert',
-        size: 50,
-        textColor: '#FFFFFF',
-        backgroundColor: 'red'
-      }]
+      label: 'Another test',
+      name: 'another'
     },
     {
-      label: '0'
+      label: 'TaxonWorks',
+      link: 'https://taxonworks.org'
     },
     {
-      label: '0',
-      link: 'http://taxonworks.org'
+      label: 'Another test',
+      name: 'another'
     },
-    {
-      label: '0'
-    }
   ]
 }
 

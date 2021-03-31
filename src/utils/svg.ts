@@ -1,7 +1,7 @@
 import { SVGAttribute } from '../types'
 export class SVG {
 
-  SVGElement: SVGElement
+  public SVGElement: SVGElement
 
   constructor (options: any) {
     this.SVGElement = this.createSVGElement('svg', options)
@@ -19,6 +19,16 @@ export class SVG {
     for (let key in attr) {
       SVGElement.setAttribute(key, `${attr[key]}`)
     }
+  }
+
+  public parseAttributes (attributes: SVGAttribute): SVGAttribute {
+    const toKebakCase = (string: string): string => string.replace(/\B(?:([A-Z])(?=[a-z]))|(?:(?<=[a-z0-9])([A-Z]))/g, '-$1$2').toLowerCase()
+
+    return Object.fromEntries(
+      Object.entries(attributes)
+      .filter(([key, value]) => value)
+      .map(([key, value]) => ([[toKebakCase(key)], value]))
+    )
   }
 
   public createSVGCircle (cx: number, cy: number, r: number, attr: SVGAttribute = {}): SVGElement {
@@ -58,12 +68,13 @@ export class SVG {
   public createSVGText (x: number, y: number, text: string, attr: SVGAttribute = {}, { verticalAlign }: { verticalAlign: boolean }): SVGElement {
     const stringLines: Array<string> = text.split(' ')
     const lineSize = parseInt(`${attr['font-size']}`, 10)
-    const middlePosition: number = stringLines.length === 1 || !verticalAlign ? 0 : (((lineSize / 2) * -stringLines.length)) + (lineSize / 2)
+    const middlePosition: number = stringLines.length === 1 || !verticalAlign ? (lineSize / 2) : (((lineSize / 2) * -stringLines.length)) + (lineSize / 2)
     const tspanLines = stringLines.map((line: string, index: number): SVGElement => {
       const tspan = this.createSVGElement('tspan', attr)
       const dy = index ? lineSize : middlePosition
-      
+
       tspan.setAttribute('dy', `${dy}px`)
+      tspan.setAttribute('x', `${x}px`)
       tspan.removeAttribute('y')
       tspan.textContent = line
 

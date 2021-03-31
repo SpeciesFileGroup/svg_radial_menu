@@ -1,15 +1,17 @@
 import { SVG } from './utils/svg'
 import { Segment } from './slice'
+import { MiddleButton } from './middleButton'
 import { EventEmitter } from './utils/eventEmitter'
 import { 
   CircleButton,
   Slice,
-  RadialMenuOptions 
+  RadialMenuOptions,
+  SVGAttribute
 } from './types'
 
 export class RadialMenu extends EventEmitter {
   centerSize: number
-  centerButton: CircleButton
+  middleButton: CircleButton
   parentElement: HTMLElement
   options: RadialMenuOptions
   SVGSlices: Array<Segment> = []
@@ -17,85 +19,91 @@ export class RadialMenu extends EventEmitter {
   height: number
   sliceSize: number
   slices: Array<Slice>
-  sliceMargin: number = 4
+  margin: number = 0
   SVGObject: SVG
+  SVGAttributes: SVGAttribute
   SVGElement: SVGElement
 
-  constructor (element: HTMLElement, opt: RadialMenuOptions) {
+  constructor (element: HTMLElement, opts: RadialMenuOptions) {
     super()
-    const { centerSize, width, height, slices, sliceSize, centerButton } = opt
+    const { centerSize, width, height, slices, sliceSize, middleButton, margin, css } = opts
 
     this.SVGObject = new SVG({
       width: `${width}px`,
-      height: `${height}px`
+      height: `${height}px`,
+      ...css || {}
     })
 
     this.SVGElement = this.SVGObject.SVGElement
 
     this.parentElement = element
-    this.options = opt
+    this.options = opts
     this.width = width
     this.height = height
     this.slices = slices
     this.sliceSize = sliceSize
     this.centerSize = centerSize
-    this.centerButton = centerButton ? centerButton : {}
+    this.middleButton = middleButton || {} as CircleButton
+    this.margin = margin || this.margin
+    this.SVGAttributes = opts.svgAttributes || {}
 
     this.generateMenu()
   }
 
   private generateMenu (): void {
+    let middleButton: MiddleButton
+
     this.drawLevel(this.slices)
-    this.SVGSlices.forEach(svgObject => {
-      this.addEvents(svgObject)
-      this.SVGElement.appendChild(svgObject.toSVG())
+    this.SVGSlices.forEach(sliceObject => {
+      this.addEvents(sliceObject)
+      this.SVGElement.appendChild(sliceObject.toSVG())
     })
+
+    if(this.middleButton) {
+      middleButton = new MiddleButton(this.middleButton, this.width / 2, this.height / 2, this.options)
+      this.addEvents(middleButton)
+      this.SVGElement.appendChild(middleButton.toSVG())
+    }
+
     this.parentElement.innerHTML = ''
     this.parentElement.appendChild(this.SVGElement)
   }
 
   private drawLevel (slices: Array<Slice>, startDistance: number = this.centerSize, radiusStart: number = 0, endAngle: number = 360): void {
-    const radiusSlice: number = (endAngle - radiusStart) / slices.length
     const sliceElements: Array<Segment> = []
+    const sliceWithSize = slices.filter(({ radius }) => radius).length
+    const slicesRadiusTotal = 
+      slices.map(({ radius }) => radius || 0)
+      .reduce((a, b) => a + b, 0)
+
+    const defaultSliceRadius: number = ((endAngle - slicesRadiusTotal) - radiusStart) / (slices.length - sliceWithSize)
     const centerX: number = this.width / 2
     const centerY: number = this.height / 2
 
-    let radiusEnd = radiusSlice
+    let radiusEnd = defaultSliceRadius
 
     slices.forEach((slice: Slice): void => {
-      let segment:Slice | undefined = slice
-      let startFrom = startDistance + this.sliceMargin
-      const children = segment.slice
+      let startFrom = startDistance
+      let radius = slice.radius || defaultSliceRadius
+      const children = slice.slice
 
-      sliceElements.push(new Segment(segment, centerX, centerY, startFrom, radiusStart, radiusSlice, this.options))
-      startFrom = startFrom + (segment?.size || this.sliceSize)
+      sliceElements.push(new Segment(slice, centerX, centerY, startFrom, radiusStart, radius, this.options))
+      startFrom = startFrom + (slice?.size || this.sliceSize) + this.margin
 
       if(children) {
-        this.drawLevel(children, startFrom, radiusStart, radiusEnd)
+        this.drawLevel(children, startFrom, radiusStart, radiusStart + radius)
       }
 
-      radiusEnd = radiusEnd + radiusSlice
-      radiusStart = radiusStart + radiusSlice
+      radiusEnd = radiusEnd + radius
+      radiusStart = radiusStart + radius
     })
 
     this.SVGSlices = this.SVGSlices.concat([], sliceElements)
   }
 
-  private createSegments (segment: Slice | Array<Slice>, x: number, y: number, startFrom: number, radiusStart: number, radiusEnd: number, options: object):Array<Segment> {
-    const radiusSlice = radiusStart + radiusEnd - radiusStart
-    if(Array.isArray(segment)) {
-      const radius = radiusSlice / segment.length
-      return segment.map((s, index) => {
-        return new Segment(s, x, y, startFrom, radiusStart + radius * index, radius, this.options)
-      })
-    } else {
-      return [new Segment(segment, x, y, startFrom, radiusStart, radiusSlice, this.options)]
-    }
-  }
-
-  private addEvents (segmentObject: Segment): void {
+  private addEvents (segmentObject: Segment | MiddleButton): void {
     const element = segmentObject.toSVG()
-    const { name } = segmentObject.slice
+    const { name } = segmentObject
 
     element.addEventListener('click', event => { this.emit('click', { event, segmentObject, name }) })
   
