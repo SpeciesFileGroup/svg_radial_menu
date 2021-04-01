@@ -1,8 +1,8 @@
 {
   "name": "@sfgrp/svg-radial-menu",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Library to create radial menus",
-  "main": "dist/svg-radial-menu.umd.js",
+  "main": "dist/svg-radial-menu.esm.js",
   "module": "dist/svg-radial-menu.esm.js",
   "private": false,
   "keywords": [

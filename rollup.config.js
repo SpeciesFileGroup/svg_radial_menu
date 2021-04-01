@@ -9,16 +9,10 @@ const config = {
       file: pkg.module,
       format: 'esm',
       compact: true
-		},
-    {
-      file: pkg.main,
-      name: 'RadialMenu',
-      format: 'umd',
-      compact: true
-		},
+		}
   ],
   external: ["tslib"],
-  plugins: [typescript(), uglify()]
+  plugins: [typescript()]
 }
 
 export default config
