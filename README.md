@@ -65,7 +65,7 @@ const myMenu = new RadialMenu(element, options)
   css: { // CSS Attributes
     class: 'radial-menu'  
   }
-  slice: [{
+  slices: [{
     label: 'Example',
     name: 'example', // (Optional) Assign a name/id to the slice, useful to identify it on event trigger
     link: 'http://taxonworks.org', // (Optional) parameter, it will make the slice work as a link
@@ -75,7 +75,7 @@ const myMenu = new RadialMenu(element, options)
       height: 20,
       url: '' // url or base64 image
     },
-    slice: [ // Add another level to the menu
+    slices: [ // Add another level to the menu
       {
         label: '6',
         name: 'examples counts',

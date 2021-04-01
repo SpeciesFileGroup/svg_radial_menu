@@ -54,24 +54,18 @@ export class Segment extends SVG {
     const distanceCoordinates = this.polarToCartesian(x, y, this.margin, radiusStart + middleRadius)
     const coordinates = this.polarToCartesian(distanceCoordinates.x, distanceCoordinates.y, middleSlice, radiusStart + middleRadius)
     const d = this.describeArc(distanceCoordinates.x, distanceCoordinates.y, startFrom, size, radiusStart, radiusEnd)
-
-    const sliceElement = this.createSVGElement('path', Object.assign({},
-      this.defaultSVGAttributes,
-      this.SVGAttributes,
-      { d: d }))
-    
+    const sliceElement = this.createSVGElement('path', Object.assign({}, this.getAttributes, { d: d }))
     let svgGroup: SVGElement
 
     elements.push(sliceElement)
-    
+
     if (slice.label) {
-      elements.push(this.createSVGText(coordinates.x, coordinates.y, slice.label, Object.assign({},
+      const iconSize = (slice?.icon?.height || 0)
+
+      elements.push(this.createSVGText(coordinates.x, (coordinates.y + iconSize / 2) , slice.label, Object.assign({},
         this.defaultSVGAttributes,
         this.SVGAttributes,
-      { fill: this.SVGAttributes.color || this.defaultSVGAttributes.color }),
-      {
-        verticalAlign: !slice?.icon
-      }))
+      { fill: this.SVGAttributes.color || this.defaultSVGAttributes.color })))
     }
     if (slice.icon) {
       elements.push(this.addIcon(slice.icon, coordinates))
@@ -82,22 +76,31 @@ export class Segment extends SVG {
     return slice.link ? this.createSVGLink(svgGroup, slice.link) : svgGroup
   }
 
-  public get name () {
+  public get name (): string | unknown {
     return this._name
   }
 
-  private get getAttributes () {
+  private get fontSize (): number {
+    return parseInt(`${this.getAttributes['font-size'] || 11}`, 10)
+  }
+
+  private get getAttributes (): SVGAttribute {
     return Object.assign({}, this.defaultSVGAttributes, this.SVGAttributes)
   }
 
   private addIcon (icon: SliceIcon, { x, y }: { x: number, y: number }): SVGElement {
     const { width, height, url } = icon
-    const fontSize = parseInt(this.getAttributes['font-size'].toString(), 10)
     const iconCoordinates = {
       x: x - width / 2,
-      y: this.slice.label ? y - height - fontSize : y - height / 2
+      y: this.slice.label ? y - (height/2) - (this.getTextSize(this.slice.label)) : y - (height / 2)
     }
 
     return this.createSVGImage(iconCoordinates.x, iconCoordinates.y, width, height, url) 
+  }
+
+  private getTextSize (label: string): number {
+    const stringLines = label.split(' ').length
+
+    return (stringLines * this.fontSize) / 2
   }
 }

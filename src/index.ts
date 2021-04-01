@@ -33,12 +33,11 @@ const options = {
   },
   slices: [
     {
-      label: 'Data attributes',
+      label: 'Tags',
       name: 'attributes',
-      radius: 50,
-      slice: [
+      slices: [
       {
-        label: '6',
+        label: '6 a',
         name: 'alert',
         size: 26,
         svgAttributes: {
@@ -53,9 +52,9 @@ const options = {
       }
     },
     {
-      label: 'SFG Homepage',
+      label: 'Citations',
       link: 'https://speciesfilegroup.org',
-      slice: [{
+      slices: [{
         label: 'It?',
         name: 'alert',
         size: 26,
@@ -91,18 +90,66 @@ const options = {
           fill: '#006ebf',
         }
       }],
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      }
+    },
+    {
+      label: 'Alternate values',
+      name: 'another',
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      },
+      slices: []
+    },
+    {
+      label: 'Depictions',
+      link: 'https://taxonworks.org',
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      }
+    },
+    {
+      label: 'Confidences',
+      name: 'another',
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      }
+    },
+    {
+      label: 'Identifier',
+      name: 'another',
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      }
+    },
+    {
+      label: 'Data attributes asas',
+      name: 'another',
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      }
     },
     {
       label: 'Another test',
-      name: 'another'
-    },
-    {
-      label: 'TaxonWorks',
-      link: 'https://taxonworks.org'
-    },
-    {
-      label: 'Another test',
-      name: 'another'
+      name: 'another',
+      icon: {
+        width: 20,
+        height: 20,
+        url: testIcon
+      }
     },
   ]
 }

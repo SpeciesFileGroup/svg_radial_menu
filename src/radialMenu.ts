@@ -85,7 +85,7 @@ export default class RadialMenu extends EventEmitter {
     slices.forEach((slice: Slice): void => {
       let startFrom = startDistance
       let radius = slice.radius || defaultSliceRadius
-      const children = slice.slice
+      const children = slice.slices
 
       sliceElements.push(new Segment(slice, centerX, centerY, startFrom, radiusStart, radius, this.options))
       startFrom = startFrom + (slice?.size || this.sliceSize) + this.margin

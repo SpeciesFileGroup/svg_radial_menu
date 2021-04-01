@@ -60,10 +60,7 @@ export class MiddleButton extends SVG {
         Object.assign({},
           this.defaultSVGAttributes,
           this.SVGAttributes,
-        { fill: this.SVGAttributes.color }),
-        {
-        verticalAlign: !this.middleButton?.icon
-      }))
+        { fill: this.SVGAttributes.color })))
     }
     if (middleButton.icon) {
       elements.push(this.addIcon(middleButton.icon, { x, y }))

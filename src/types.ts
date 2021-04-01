@@ -6,7 +6,7 @@ export type Slice = {
   icon?: SliceIcon
   radius?: number
   svgAttributes?: SVGAttribute,
-  slice?: Array<Slice>
+  slices?: Array<Slice>
 }
 
 export type RadialMenuOptions = {

@@ -65,10 +65,10 @@ export class SVG {
     return element
   }
 
-  public createSVGText (x: number, y: number, text: string, attr: SVGAttribute = {}, { verticalAlign }: { verticalAlign: boolean }): SVGElement {
+  public createSVGText (x: number, y: number, text: string, attr: SVGAttribute = {}): SVGElement {
     const stringLines: Array<string> = text.split(' ')
     const lineSize = parseInt(`${attr['font-size']}`, 10)
-    const middlePosition: number = stringLines.length === 1 || !verticalAlign ? (lineSize / 2) : (((lineSize / 2) * -stringLines.length)) + (lineSize / 2)
+    const middlePosition: number = stringLines.length === 1 ? (lineSize / 2) : (((lineSize / 2) * -stringLines.length)) + (lineSize)
     const tspanLines = stringLines.map((line: string, index: number): SVGElement => {
       const tspan = this.createSVGElement('tspan', attr)
       const dy = index ? lineSize : middlePosition
