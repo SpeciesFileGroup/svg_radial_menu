@@ -5,6 +5,7 @@ export type Slice = {
   size?: number,
   icon?: SliceIcon
   radius?: number
+  innerPosition?: number,
   svgAttributes?: SVGAttribute,
   slices?: Array<Slice>
 }
@@ -15,6 +16,7 @@ export type RadialMenuOptions = {
   sliceSize: number,
   centerSize: number,
   margin?: number,
+  innerPosition?: number,
   css: SVGAttribute,
   middleButton?: CircleButton,
   svgAttributes?: SVGAttribute,

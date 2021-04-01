@@ -16,6 +16,7 @@ export class Segment extends SVG {
   private defaultSVGAttributes: SVGAttribute
   private x: number
   private y: number
+  private innerPosition: number = 2
 
   constructor (slice: Slice, x: number, y: number, startFrom: number, radiusStart: number, radiusSlice: number, opts: RadialMenuOptions) {
     super(opts)
@@ -33,6 +34,7 @@ export class Segment extends SVG {
     this.margin = margin || this.margin
     this.SVGAttributes = this.parseAttributes(slice.svgAttributes || {})
     this.defaultSVGAttributes = this.parseAttributes(opts.svgAttributes || {})
+    this.innerPosition = slice.innerPosition || opts.innerPosition || this.innerPosition
 
     if ((this.radiusEnd - this.radiusStart) >= 360) {
       this.radiusEnd = 359.999
@@ -49,7 +51,7 @@ export class Segment extends SVG {
   private createSlice (x: number, y: number, startFrom: number, size: number, radiusStart: number, radiusEnd: number, opts: RadialMenuOptions): SVGElement {
     const slice = this.slice
     const elements: Array<SVGElement> = []
-    const middleSlice = (size / 2) + startFrom
+    const middleSlice = (size / this.innerPosition) + startFrom
     const middleRadius = (radiusEnd - radiusStart) / 2
     const distanceCoordinates = this.polarToCartesian(x, y, this.margin, radiusStart + middleRadius)
     const coordinates = this.polarToCartesian(distanceCoordinates.x, distanceCoordinates.y, middleSlice, radiusStart + middleRadius)

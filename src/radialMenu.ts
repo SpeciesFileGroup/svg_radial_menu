@@ -11,6 +11,7 @@ import {
 
 export default class RadialMenu extends EventEmitter {
   centerSize: number
+  innerPosition: number = 2
   middleButton: CircleButton
   parentElement: HTMLElement
   options: RadialMenuOptions
@@ -26,7 +27,7 @@ export default class RadialMenu extends EventEmitter {
 
   constructor (element: HTMLElement, opts: RadialMenuOptions) {
     super()
-    const { centerSize, width, height, slices, sliceSize, middleButton, margin, css } = opts
+    const { centerSize, width, height, slices, sliceSize, middleButton, margin, css, innerPosition } = opts
 
     this.SVGObject = new SVG({
       width: `${width}px`,
@@ -36,6 +37,7 @@ export default class RadialMenu extends EventEmitter {
 
     this.SVGElement = this.SVGObject.SVGElement
 
+    this.innerPosition = innerPosition || this.innerPosition
     this.parentElement = element
     this.options = opts
     this.width = width
