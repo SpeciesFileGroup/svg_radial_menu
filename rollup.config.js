@@ -12,7 +12,7 @@ const config = {
 		}
   ],
   external: ["tslib"],
-  plugins: [typescript()]
+  plugins: [typescript(), uglify()]
 }
 
 export default config
