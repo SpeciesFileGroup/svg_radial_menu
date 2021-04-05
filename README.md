@@ -17,14 +17,6 @@ npm start
 
 Then go to http://localhost:8080
 
-To create a production build:
-
-```sh
-npm run build:library
-```
-
-
-Navigate to `http://localhost:8080/` in your browser.
 
 ## Installation
 
@@ -64,7 +56,8 @@ const myMenu = new RadialMenu(element, options)
 
   css: { // CSS Attributes
     class: 'radial-menu'  
-  }
+  },
+
   slices: [{
     label: 'Example',
     name: 'example', // (Optional) Assign a name/id to the slice, useful to identify it on event trigger
@@ -86,13 +79,35 @@ const myMenu = new RadialMenu(element, options)
         }
       }
     ]
-  ]
+  ],
+
+  middleButton: { // Middle button
+    name: center,
+    radius: 28,
+    name: 'middle',
+    svgAttributes: {
+      ...
+    }
+    icon: {
+      ...
+    }
+  },
 }
 ```
 
 ### Events
 
 #### click, dbclick, contextmenu
+
+```javascript
+import RadialMenu from '@sfg/svg-radial-menu'
+
+const element = document.querySelector('#svg-menu-container')
+const myMenu.on('click', function (event) {
+  console.log('Hey, )
+})
+```
+
 Events are triggered when a slice or middle button is clicked providing the following data:
 
 ```typescript

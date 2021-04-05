@@ -1,4 +1,4 @@
-import { Slice, SliceIcon, RadialMenuOptions, SVGAttribute } from './types'
+import { Slice, SliceIcon, RadialMenuOptions, SVGAttribute } from './types/types'
 import { SVG } from './utils/svg'
 
 export class Segment extends SVG {

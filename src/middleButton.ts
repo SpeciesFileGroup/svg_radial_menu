@@ -1,4 +1,4 @@
-import { Slice, SliceIcon, CircleButton, RadialMenuOptions, SVGAttribute } from './types'
+import { Slice, SliceIcon, CircleButton, RadialMenuOptions, SVGAttribute } from './types/types'
 import { SVG } from './utils/svg'
 
 export class MiddleButton extends SVG {

@@ -7,7 +7,7 @@ import {
   Slice,
   RadialMenuOptions,
   SVGAttribute
-} from './types'
+} from './types/types'
 
 export default class RadialMenu extends EventEmitter {
   centerSize: number

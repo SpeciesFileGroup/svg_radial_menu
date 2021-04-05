@@ -1,9 +1,10 @@
 {
   "name": "@sfgrp/svg-radial-menu",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Library to create radial menus",
   "main": "dist/svg-radial-menu.esm.js",
   "module": "dist/svg-radial-menu.esm.js",
+  "types": "dist/index.d.ts",
   "private": false,
   "keywords": [
     "species file group",

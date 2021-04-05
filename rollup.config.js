@@ -8,7 +8,8 @@ const config = {
     {
       file: pkg.module,
       format: 'esm',
-      compact: true
+      compact: true,
+      sourcemap: true
 		}
   ],
   external: ["tslib"],

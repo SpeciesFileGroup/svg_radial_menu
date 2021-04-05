@@ -37,7 +37,7 @@ const options = {
       name: 'attributes',
       slices: [
       {
-        label: '6 a',
+        label: '6',
         name: 'alert',
         size: 26,
         svgAttributes: {

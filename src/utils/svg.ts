@@ -1,4 +1,4 @@
-import { SVGAttribute } from '../types'
+import { SVGAttribute } from '../types/types'
 export class SVG {
 
   public SVGElement: SVGElement
@@ -116,7 +116,7 @@ export class SVG {
   }
 
   public polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
-    const angleInRadians = (angleInDegrees-90) * Math.PI / 180.0
+    const angleInRadians = (angleInDegrees) * Math.PI / 180.0
     
     return {
       x: centerX + (radius * Math.cos(angleInRadians)),
