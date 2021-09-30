@@ -10,44 +10,57 @@ import {
 } from './types/types'
 
 export default class RadialMenu extends EventEmitter {
-  centerSize: number
-  innerPosition: number = 2
-  middleButton: CircleButton
-  parentElement: HTMLElement
-  options: RadialMenuOptions
-  SVGSlices: Array<Segment> = []
-  width: number
-  height: number
-  sliceSize: number
-  slices: Array<Slice>
-  margin: number = 0
-  SVGObject: SVG
   SVGAttributes: SVGAttribute
   SVGElement: SVGElement
+  SVGObject: SVG
+  SVGSlices: Array<Segment> = []
+  centerSize: number
+  height: number
+  innerPosition: number = 2
+  margin: number = 0
+  middleButton: CircleButton
+  options: RadialMenuOptions
+  parentElement: HTMLElement
+  rotateAngle: number = 0
+  sliceSize: number
+  slices: Array<Slice>
+  width: number
 
   constructor (element: HTMLElement, opts: RadialMenuOptions) {
     super()
-    const { centerSize, width, height, slices, sliceSize, middleButton, margin, css, innerPosition } = opts
+
+    const { 
+      centerSize,
+      svgAttributes,
+      height,
+      innerPosition,
+      margin,
+      middleButton,
+      rotateAngle,
+      sliceSize,
+      slices,
+      width,
+    } = opts
 
     this.SVGObject = new SVG({
       width: `${width}px`,
       height: `${height}px`,
-      ...css || {}
+      ...svgAttributes || {}
     })
 
-    this.SVGElement = this.SVGObject.SVGElement
-
-    this.innerPosition = innerPosition || this.innerPosition
-    this.parentElement = element
-    this.options = opts
-    this.width = width
-    this.height = height
-    this.slices = slices
-    this.sliceSize = sliceSize
-    this.centerSize = centerSize
-    this.middleButton = middleButton || {} as CircleButton
-    this.margin = margin || this.margin
     this.SVGAttributes = opts.svgAttributes || {}
+    this.SVGElement = this.SVGObject.SVGElement
+    this.centerSize = centerSize
+    this.height = height
+    this.innerPosition = innerPosition || this.innerPosition
+    this.margin = margin || this.margin
+    this.middleButton = middleButton || {} as CircleButton
+    this.options = opts
+    this.parentElement = element
+    this.rotateAngle = rotateAngle || this.rotateAngle
+    this.sliceSize = sliceSize
+    this.slices = slices
+    this.width = width
 
     this.generateMenu()
   }
@@ -71,7 +84,7 @@ export default class RadialMenu extends EventEmitter {
     this.parentElement.appendChild(this.SVGElement)
   }
 
-  private drawLevel (slices: Array<Slice>, startDistance: number = this.centerSize, radiusStart: number = 0, endAngle: number = 360): void {
+  private drawLevel (slices: Array<Slice>, startDistance: number = this.centerSize, radiusStart: number = this.rotateAngle, endAngle: number = (360 + this.rotateAngle)): void {
     const sliceElements: Array<Segment> = []
     const sliceWithSize = slices.filter(({ radius }) => radius).length
     const slicesRadiusTotal = 

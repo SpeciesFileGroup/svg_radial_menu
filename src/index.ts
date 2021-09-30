@@ -8,22 +8,24 @@ const options = {
   sliceSize: 120,
   centerSize: 40,
   margin: 2,
-  css: {
-    class: 'radial-menu'
-  },
+  rotateAngle: 0,
   svgAttributes: {
-    fill: '#FFFFFF',
-    color: '#000000',
+    class: 'radial-menu',
+  },
+  svgSliceAttributes : {
     textAnchor: 'middle',
     fontSize: '11px',
-    fontFamily: 'Arial'
+    fontFamily: 'Arial',
+    fill: '#FFFFFF',
+    color: '#000000',
+    class: 'slice'
   },
   middleButton: {
-    backgroundColor: 'red',
     radius: 28,
     name: 'middle',
     svgAttributes: {
-      fill: 'green'
+      fill: 'green',
+      class: 'test'
     },
     icon: {
       width: 30,

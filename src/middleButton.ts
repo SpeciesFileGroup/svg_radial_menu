@@ -73,7 +73,7 @@ export class MiddleButton extends SVG {
 
   private addIcon (icon: SliceIcon, { x, y }: { x: number, y: number }): SVGElement {
     const { width, height, url } = icon
-    const fontSize = parseInt(this.getAttributes['font-size'].toString(), 10)
+    const fontSize = parseInt(this.getAttributes['font-size']?.toString(), 10) || 11
     const iconCoordinates = {
       x: x - width / 2,
       y: this.middleButton.label ? y - height - fontSize : y - height / 2

@@ -47,15 +47,17 @@ const myMenu = new RadialMenu(element, options)
   height: 500,    // SVG height
   margin: 2,      // Space between slices
   centerSize: 30, // Size for empty space in the middle of the radial
+  rotateAngle: 0,  // Start radial angle, default = 0
   
   svgAttributes: { // SVG attributes
-    fontSize: 11,
-    fontFamily: 'Arial',
+    class: 'radial-menu'
     ...
   },
 
-  css: { // CSS Attributes
-    class: 'radial-menu'  
+  svgSliceAttributes: { // default SVG attributes for all slices
+    fontSize: 11,
+    fontFamily: 'Arial',
+    ...
   },
 
   slices: [{
@@ -104,7 +106,7 @@ import RadialMenu from '@sfg/svg-radial-menu'
 
 const element = document.querySelector('#svg-menu-container')
 const myMenu.on('click', function (event) {
-  console.log('Hey, )
+  console.log('Clicked!')
 })
 ```
 

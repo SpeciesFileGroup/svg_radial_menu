@@ -13,7 +13,7 @@ export class Segment extends SVG {
   private startFrom: number
   private textColor: string = '#FFFFFF'
   private SVGAttributes: SVGAttribute
-  private defaultSVGAttributes: SVGAttribute
+  private svgSliceAttributes: SVGAttribute
   private x: number
   private y: number
   private innerPosition: number = 2
@@ -33,7 +33,7 @@ export class Segment extends SVG {
     this.y = y
     this.margin = margin || this.margin
     this.SVGAttributes = this.parseAttributes(slice.svgAttributes || {})
-    this.defaultSVGAttributes = this.parseAttributes(opts.svgAttributes || {})
+    this.svgSliceAttributes = this.parseAttributes(opts.svgSliceAttributes || {})
     this.innerPosition = slice.innerPosition || opts.innerPosition || this.innerPosition
 
     if ((this.radiusEnd - this.radiusStart) >= 360) {
@@ -62,20 +62,25 @@ export class Segment extends SVG {
     elements.push(sliceElement)
 
     if (slice.label) {
-      const iconSize = (slice?.icon?.height || 0)
+      const iconSize = slice?.icon?.height || 0
 
       elements.push(this.createSVGText(coordinates.x, (coordinates.y + iconSize / 2) , slice.label, Object.assign({},
-        this.defaultSVGAttributes,
+        this.svgSliceAttributes,
         this.SVGAttributes,
-      { fill: this.SVGAttributes.color || this.defaultSVGAttributes.color })))
+      { fill: this.SVGAttributes.color || this.svgSliceAttributes.color })))
     }
+    
     if (slice.icon) {
       elements.push(this.addIcon(slice.icon, coordinates))
     }
 
     svgGroup = this.createSVGGroup(elements)
 
-    return slice.link ? this.createSVGLink(svgGroup, slice.link) : svgGroup
+    this.SetSVGAttributes(svgGroup, this.getAttributes)
+
+    return slice.link 
+      ? this.createSVGLink(svgGroup, slice.link) 
+      : svgGroup
   }
 
   public get name (): string | unknown {
@@ -87,7 +92,7 @@ export class Segment extends SVG {
   }
 
   private get getAttributes (): SVGAttribute {
-    return Object.assign({}, this.defaultSVGAttributes, this.SVGAttributes)
+    return Object.assign({}, this.svgSliceAttributes, this.SVGAttributes)
   }
 
   private addIcon (icon: SliceIcon, { x, y }: { x: number, y: number }): SVGElement {
