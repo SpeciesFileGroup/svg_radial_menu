@@ -1,6 +1,7 @@
 # SVG Radial Menu
 
 A simple SVG radial menu
+
 ## How to run on localhost
 
 First install dependencies:
@@ -12,11 +13,10 @@ npm install
 To run in dev mode mode:
 
 ```sh
-npm start
+npm run dev
 ```
 
-Then go to http://localhost:8080
-
+Then go to http://localhost:5173
 
 ## Installation
 
@@ -33,6 +33,7 @@ npm install @sfg/svg-radial-menu
 ```html
 <div id="svg-menu-container"></div>
 ```
+
 ```javascript
 import RadialMenu from '@sfg/svg-radial-menu'
 
@@ -41,6 +42,7 @@ const myMenu = new RadialMenu(element, options)
 ```
 
 ### Options object
+
 ```javascript
 {
   width: 500,     // SVG width
@@ -48,7 +50,7 @@ const myMenu = new RadialMenu(element, options)
   margin: 2,      // Space between slices
   centerSize: 30, // Size for empty space in the middle of the radial
   rotateAngle: 0,  // Start radial angle, default = 0
-  
+
   svgAttributes: { // SVG attributes
     class: 'radial-menu'
     ...
@@ -99,7 +101,7 @@ const myMenu = new RadialMenu(element, options)
 
 ### Events
 
-#### click, dbclick, contextmenu
+#### click, dblclick, contextmenu, mousedown, mouseup
 
 ```javascript
 import RadialMenu from '@sfg/svg-radial-menu'
@@ -113,8 +115,8 @@ const myMenu.on('click', function (event) {
 Events are triggered when a slice or middle button is clicked providing the following data:
 
 ```typescript
-{ 
-  event: PointerEvent, 
+{
+  event: PointerEvent,
   name: string,
   SegmentObject: Slice | MiddleButton
 }

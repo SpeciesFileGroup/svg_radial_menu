@@ -1,4 +1,4 @@
-import "./styles.css";
+import './styles.css'
 import RadialMenu from './radialMenu'
 import testIcon from './assets/icon'
 
@@ -10,9 +10,9 @@ const options = {
   margin: 2,
   rotateAngle: 0,
   svgAttributes: {
-    class: 'radial-menu',
+    class: 'radial-menu'
   },
-  svgSliceAttributes : {
+  svgSliceAttributes: {
     textAnchor: 'middle',
     fontSize: '11px',
     fontFamily: 'Arial',
@@ -38,15 +38,16 @@ const options = {
       label: 'Tags',
       name: 'attributes',
       slices: [
-      {
-        label: '6',
-        name: 'alert',
-        size: 26,
-        svgAttributes: {
-          color: '#FFFFFF',
-          fill: '#006ebf'
+        {
+          label: '6',
+          name: 'alert',
+          size: 26,
+          svgAttributes: {
+            color: '#FFFFFF',
+            fill: '#006ebf'
+          }
         }
-      }],
+      ],
       icon: {
         width: 20,
         height: 20,
@@ -56,42 +57,44 @@ const options = {
     {
       label: 'Citations',
       link: 'https://speciesfilegroup.org',
-      slices: [{
-        label: 'It?',
-        name: 'alert',
-        size: 26,
-        svgAttributes: {
-          color: '#FFFFFF',
-          fill: '#006ebf',
+      slices: [
+        {
+          label: 'It?',
+          name: 'alert',
+          size: 26,
+          svgAttributes: {
+            color: '#FFFFFF',
+            fill: '#006ebf'
+          }
+        },
+        {
+          label: 'Like',
+          name: 'alert',
+          size: 26,
+          svgAttributes: {
+            color: '#FFFFFF',
+            fill: '#006ebf'
+          }
+        },
+        {
+          label: 'You',
+          name: 'alert',
+          size: 26,
+          svgAttributes: {
+            color: '#FFFFFF',
+            fill: '#006ebf'
+          }
+        },
+        {
+          label: 'Do',
+          name: 'alert',
+          size: 26,
+          svgAttributes: {
+            color: '#FFFFFF',
+            fill: '#006ebf'
+          }
         }
-      },
-      {
-        label: 'Like',
-        name: 'alert',
-        size: 26,
-        svgAttributes: {
-          color: '#FFFFFF',
-          fill: '#006ebf',
-        }
-      },
-      {
-        label: 'You',
-        name: 'alert',
-        size: 26,
-        svgAttributes: {
-          color: '#FFFFFF',
-          fill: '#006ebf',
-        }
-      },
-      {
-        label: 'Do',
-        name: 'alert',
-        size: 26,
-        svgAttributes: {
-          color: '#FFFFFF',
-          fill: '#006ebf',
-        }
-      }],
+      ],
       icon: {
         width: 20,
         height: 20,
@@ -152,14 +155,17 @@ const options = {
         height: 20,
         url: testIcon
       }
-    },
+    }
   ]
 }
 
 const element = document.querySelector('#app') as HTMLElement
 let radial = new RadialMenu(element, options)
 
+const EVENTS = ['click', 'mousedown', 'mouseup', 'dblclick', 'contextmenu']
 
-radial.on('click', (data) => {
-  console.log(data)
+EVENTS.forEach((eventName) => {
+  radial.on(eventName, (data) => {
+    console.log(eventName, data)
+  })
 })

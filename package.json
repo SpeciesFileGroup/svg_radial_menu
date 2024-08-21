@@ -1,10 +1,17 @@
 {
   "name": "@sfgrp/svg-radial-menu",
-  "version": "1.0.7",
+  "version": "1.0.8",
+  "type": "module",
   "description": "Library to create radial menus",
-  "main": "dist/svg-radial-menu.esm.js",
-  "module": "dist/svg-radial-menu.esm.js",
-  "types": "src/types/index.d.ts",
+  "main": "./dist/svg-radial-menu.umd.cjs",
+  "module": "./dist/svg-radial-menu.js",
+  "types": "src/types/types.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/svg-radial-menu.js",
+      "require": "./dist/svg-radial-menu.umd.cjs"
+    }
+  },
   "private": false,
   "keywords": [
     "species file group",
@@ -13,10 +20,9 @@
     "svg"
   ],
   "scripts": {
-    "clean": "rm dist/bundle.js",
-    "start": "snowpack dev",
-    "build": "snowpack build",
-    "build:library": "rollup -c rollup.config.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "homepage": "https://github.com/SpeciesFileGroup/svg_radial_menu",
   "license": "NCSA",
@@ -26,12 +32,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@rollup/plugin-typescript": "^8.2.1",
-    "eslint": "^7.23.0",
-    "rollup": "^2.44.0",
-    "rollup-plugin-uglify": "^6.0.4",
-    "snowpack": "^3.1.2",
-    "tslib": "^2.1.0",
-    "typescript": "^4.2.3"
+    "vite": "^5.4.2",
+    "typescript": "^5.5.4"
   }
 }
